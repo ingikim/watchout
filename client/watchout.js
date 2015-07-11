@@ -11,6 +11,11 @@ var delay = 200;
 var enemyRadius = 25;
 var playerRadius = 25;
 var radiusSum = enemyRadius + playerRadius;
+var currentScore = 0;
+var highScore = 0;
+var collisionCount = 0;
+
+
 /**
  * Create player and enemy objects
 **/
@@ -39,6 +44,13 @@ var randY = function(){return Math.round(Math.random() * height)};
 /**
  * Collision Detection
  **/
+
+
+var collisionHandler = function() {
+  d3.select("body").selectAll(".collisions span").text(++collisionCount);
+  currentScore = 0;
+}
+
 var checkCollision = function(curEnemy){
   // debugger;
 
@@ -51,6 +63,7 @@ var checkCollision = function(curEnemy){
 
   var separation = function(x, y){
     if(Math.sqrt(xDiff*xDiff + yDiff*yDiff) < radiusSum){
+      collisionHandler();
     }
   };
   separation(xDiff, yDiff);
@@ -177,3 +190,10 @@ setInterval(function(){
   moveEnemy(enemyData);
 }, clock + delay);
 
+setInterval(function(){
+  d3.select("body").selectAll(".current span").text(++currentScore);
+  if(highScore < currentScore) {
+    highScore = currentScore;
+  }
+  d3.select("body").selectAll(".high span").text(highScore);
+}, 10)
