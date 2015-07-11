@@ -1,30 +1,40 @@
 // start slingin' some d3 here.
 
+/**
+ * Configuration stuff
+ **/
 var height = window.innerHeight * 0.80;
 var width = window.innerWidth * 0.80;
 var clock = 800;
 var enemyNum = 10;
-var delay = 0;
-// var enemyType = { "cx": 250, "cy": 250, "radius": 25, "color": "red"};
+var delay = 200;
 
+/**
+ * Create player and enemy objects
+**/
 var enemyData = [];
-
 var playerData = [
   {"cx": 400, "cy": 250, "radius": 25, "color": "blue"}  
 ];
+
+/**
+ * D3 grouping stuff
+**/
 var svgContainer = d3.select(".gameboard").append("svg")
                                             .attr("width", width)
                                             .attr("height", height);
 
 var circlegroup = svgContainer.append("g");
-                                    // .attr("transform", "translate(80, 90)");
 
 
-
+//Helper random makers
 var randX = function(){return Math.round(Math.random() * width)};
 var randY = function(){return Math.round(Math.random() * height)};
 
 
+/**
+ * Enemy Stuff
+**/
 var pushEnemy = function(enemyNum){
   for(var i = 0; i < enemyNum; i++){
     enemyData.push({ "cx": randX(), "cy": randY(), "radius": 25, "color": "red"});
@@ -44,8 +54,6 @@ var moveEnemy = function(data){
   var enemy = circlegroup.selectAll("circle")
       .data(enemyData);
 
-  // debugger;
-
   enemy.enter().append("circle")
           .attr("cx", function (d) {return d.cx; })
           .attr("cy", function (d) {return d.cy; })
@@ -57,16 +65,6 @@ var moveEnemy = function(data){
   enemy.transition().duration(clock)
           .attr("cx", function(d) {return d.cx; })
           .attr("cy", function(d) {return d.cy; });
-
-        // .attr("transform", "translate3d(" + randX() + "px, " + randY() + "px, 0)");
-
-  // enemy.attr("cx"
-
-  // for(var i = 0; i < enemy.length; i++){
-  //   enemy[i]
-  // }
-  // debugger;
-  // enemy.exit().remove();
 };
 
 /*
@@ -91,19 +89,19 @@ function dragmove(d) {
           return d3.event.y;
       })
 }
-      // .attr("cx", d3.event.x)//((d3.event.sourceEvent.pageY) - this.offsetHeight/2)+"px")
-      // .attr("cy", d3.event.y)//((d3.event.sourceEvent.pageX) - this.offsetWidth/2)+"px")}
-
 var drag = d3.behavior.drag()
     .on("drag", dragmove);
 
-// var drag = d3.behavior.drag();
-      // .on('dragstart', function(){console.log("dragstart");})
-      // .on('drag', function() { circle.attr('cx', d3.event.x)
-      //                                .attr('cy', d3.event.y);
-      // });
-      // .on('dragend', function(){console.log("dragend");});
 
+/**
+ * Collision Detection
+ **/
+
+
+
+/**
+ * Player Maker Functions
+ **/
 var playermaker = function(data){
   var player = svgContainer.selectAll("circle").data(playerData);
 
@@ -114,13 +112,12 @@ var playermaker = function(data){
           .attr("cy", function (d) {return d.cy; })
           .attr("r", function (d) {return d.radius; })
           .style("fill", function (d) { return d.color;});
-
-  //player.call(drag);
 };
 
-// d3.selectAll(".playerClass").call(drag);
 
-
+/**
+ * Function invocations
+ **/
 playermaker(playerData);
 
 moveEnemy(enemyData);
