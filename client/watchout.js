@@ -1,15 +1,16 @@
 // start slingin' some d3 here.
 
-var width = 700;
-var height = 700;
+var height = window.innerHeight * 0.80;
+var width = window.innerWidth * 0.80;
 var clock = 800;
 var enemyNum = 10;
+var delay = 0;
 // var enemyType = { "cx": 250, "cy": 250, "radius": 25, "color": "red"};
 
 var enemyData = [];
 
 var playerData = [
-  { "cx": 400, "cy": 250, "radius": 25, "color": "blue"}  
+  {"cx": 400, "cy": 250, "radius": 25, "color": "blue"}  
 ];
 var svgContainer = d3.select(".gameboard").append("svg")
                                             .attr("width", width)
@@ -30,6 +31,7 @@ var pushEnemy = function(enemyNum){
   }
 };
 pushEnemy(enemyNum);
+
 
 var randMove = function(){
   for(var i = 0 ; i < enemyData.length; i++){
@@ -67,10 +69,50 @@ var moveEnemy = function(data){
   // enemy.exit().remove();
 };
 
+/*
+ * Drag Moving Function
+*/ 
+function dragmove(d) {
+    d3.select(this)
+      .attr("cx", d3.event.x)//((d3.event.sourceEvent.pageY) - this.offsetHeight/2)+"px")
+      .attr("cy", d3.event.y)//((d3.event.sourceEvent.pageX) - this.offsetWidth/2)+"px")
+}
+
+var drag = d3.behavior.drag()
+    .on("drag", dragmove);
+
+// var drag = d3.behavior.drag();
+      // .on('dragstart', function(){console.log("dragstart");})
+      // .on('drag', function() { circle.attr('cx', d3.event.x)
+      //                                .attr('cy', d3.event.y);
+      // });
+      // .on('dragend', function(){console.log("dragend");});
+
+var playermaker = function(data){
+  var player = svgContainer.selectAll("circle").data(playerData);
+
+  player.enter().append("circle")
+          .attr("class", "playerClass")
+          .call(drag)
+          .on('drag', function(circle) { circle.attr('cx', d3.event.x)
+                                         .attr('cy', d3.event.y); })
+          .attr("cx", function (d) {return d.cx; })
+          .attr("cy", function (d) {return d.cy; })
+          .attr("r", function (d) {return d.radius; })
+          .style("fill", function (d) { return d.color;});
+
+  //player.call(drag);
+};
+
+// d3.selectAll(".playerClass").call(drag);
+
+
+playermaker(playerData);
+
 moveEnemy(enemyData);
 
 setInterval(function(){
   randMove();
   moveEnemy(enemyData);
-}, clock);
+}, clock + delay);
 
