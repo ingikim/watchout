@@ -5,11 +5,11 @@
  **/
 var height = window.innerHeight * 0.80;
 var width = window.innerWidth * 0.80;
-var clock = 800;
+var clock = 1000;
 var enemyNum = (height*width)/35000;
 var delay = 200;
-var enemyRadius = 25;
-var playerRadius = 25;
+var enemyRadius = 50;
+var playerRadius = 20;
 var radiusSum = enemyRadius + playerRadius;
 var currentScore = 0;
 var highScore = 0;
@@ -54,8 +54,8 @@ var collisionHandler = function() {
 var checkCollision = function(curEnemy){
   // debugger;
 
-  var enemyX = parseFloat(curEnemy.attr("cx"));
-  var enemyY = parseFloat(curEnemy.attr("cy"));
+  var enemyX = parseFloat(curEnemy.attr("x"));
+  var enemyY = parseFloat(curEnemy.attr("y"));
   var playerX = d3.select(player[0][0]).attr("cx");
   var playerY = d3.select(player[0][0]).attr("cy");
   var xDiff = enemyX - playerX;
@@ -71,20 +71,20 @@ var checkCollision = function(curEnemy){
 
 var tweenWithCollisionDetection = function(){
   var currentEnemy = d3.select(this);
-  var startPosX = parseFloat(currentEnemy.attr("cx"));
+  var startPosX = parseFloat(currentEnemy.attr("x"));
   var endPosX;
-  var startPosY = parseFloat(currentEnemy.attr("cy"));
+  var startPosY = parseFloat(currentEnemy.attr("y"));
   var endPosY;
 
-  currentEnemy.attr("cx", function(d) {return d.cx});
-  endPosX = parseFloat(currentEnemy.attr("cx"));
+  currentEnemy.attr("x", function(d) {return d.x});
+  endPosX = parseFloat(currentEnemy.attr("x"));
 
-  currentEnemy.attr("cy", function(d) {return d.cy});
-  endPosY = parseFloat(currentEnemy.attr("cy"));
+  currentEnemy.attr("y", function(d) {return d.y});
+  endPosY = parseFloat(currentEnemy.attr("y"));
 
   return function(t){
-    currentEnemy.attr("cx", startPosX + (endPosX - startPosX)*t);
-    currentEnemy.attr("cy", startPosY + (endPosY - startPosY)*t);
+    currentEnemy.attr("x", startPosX + (endPosX - startPosX)*t);
+    currentEnemy.attr("y", startPosY + (endPosY - startPosY)*t);
     checkCollision(currentEnemy);
   };
 
@@ -96,7 +96,7 @@ var tweenWithCollisionDetection = function(){
 **/
 var pushEnemy = function(enemyNum){
   for(var i = 0; i < enemyNum; i++){
-    enemyData.push({ "cx": randX(), "cy": randY(), "radius": enemyRadius, "color": "red"});
+    enemyData.push({ "x": randX(), "y": randY(), "width": enemyRadius, "height": enemyRadius * 2, "xlink:href": "marcus.png"});
   }
 };
 pushEnemy(enemyNum);
@@ -104,8 +104,8 @@ pushEnemy(enemyNum);
 
 var randMove = function(){
   for(var i = 0 ; i < enemyData.length; i++){
-    enemyData[i]['cx'] = randX();
-    enemyData[i]['cy'] = randY();
+    enemyData[i]['x'] = randX();
+    enemyData[i]['y'] = randY();
   }
 };
 
@@ -113,14 +113,16 @@ var randMove = function(){
 
 
 var moveEnemy = function(data){
-  enemy = circlegroup.selectAll("circle")
+  enemy = circlegroup.selectAll("image")
       .data(enemyData);
 
-  enemy.enter().append("circle")
-          .attr("cx", function (d) {return d.cx; })
-          .attr("cy", function (d) {return d.cy; })
-          .attr("r", function (d) {return d.radius; })
-          .style("fill", function (d) { return d.color;});
+  enemy.enter().append("image")
+          .attr("class", "enemyClass")
+          .attr("x", function (d) {return d.x; })
+          .attr("y", function (d) {return d.y; })
+          .attr("width", function (d) {return d.width; })
+          .attr("height", function (d) {return d.height; })
+          .attr("xlink:href", function (d) {return d["xlink:href"]; });
 
 
         // debugger;
