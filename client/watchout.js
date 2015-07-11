@@ -8,14 +8,18 @@ var width = window.innerWidth * 0.80;
 var clock = 800;
 var enemyNum = 10;
 var delay = 200;
-
+var enemyRadius = 25;
+var playerRadius = 25;
+var radiusSum = enemyRadius + playerRadius;
 /**
  * Create player and enemy objects
 **/
 var enemyData = [];
 var playerData = [
-  {"cx": 400, "cy": 250, "radius": 25, "color": "blue"}  
+  {"cx": 400, "cy": 250, "radius": playerRadius, "color": "blue"}  
 ];
+var enemy;
+var player;
 
 /**
  * D3 grouping stuff
@@ -37,7 +41,7 @@ var randY = function(){return Math.round(Math.random() * height)};
 **/
 var pushEnemy = function(enemyNum){
   for(var i = 0; i < enemyNum; i++){
-    enemyData.push({ "cx": randX(), "cy": randY(), "radius": 25, "color": "red"});
+    enemyData.push({ "cx": randX(), "cy": randY(), "radius": enemyRadius, "color": "red"});
   }
 };
 pushEnemy(enemyNum);
@@ -50,8 +54,11 @@ var randMove = function(){
   }
 };
 
+
+
+
 var moveEnemy = function(data){
-  var enemy = circlegroup.selectAll("circle")
+  enemy = circlegroup.selectAll("circle")
       .data(enemyData);
 
   enemy.enter().append("circle")
@@ -60,11 +67,11 @@ var moveEnemy = function(data){
           .attr("r", function (d) {return d.radius; })
           .style("fill", function (d) { return d.color;});
 
-  enemy.attr("class", "movedown");
 
   enemy.transition().duration(clock)
           .attr("cx", function(d) {return d.cx; })
-          .attr("cy", function(d) {return d.cy; });
+          .attr("cy", function(d) {return d.cy; })
+          .call(checkCollision);
 };
 
 /*
@@ -96,15 +103,41 @@ var drag = d3.behavior.drag()
 /**
  * Collision Detection
  **/
+var checkCollision = function(){
+  // debugger;
+
+  var enemies = enemy[0];
+  var enemyX;
+  var enemyY;
+  var playerX;
+  var playerY;
+  var xDiff;
+  var yDiff;
+  var separation = function(x, y){
+    if(Math.sqrt(xDiff*xDiff + yDiff*yDiff) < radiusSum){
+      console.log("Collided");
+    }
+  };
+
+  for(var i = 0; i < enemies.length; i++){
+    enemyX = d3.select(enemies[i]).attr("cx");
+    enemyY = d3.select(enemies[i]).attr("cy");
+    playerX = d3.select(player[0][0]).attr("cx");
+    playerY = d3.select(player[0][0]).attr("cy");
+    xDiff = enemyX - playerX;
+    yDiff = enemyY - playerY;
+    separation(xDiff, yDiff);
+  }
+}
 
 
 
 /**
  * Player Maker Functions
  **/
-var playermaker = function(data){
-  var player = svgContainer.selectAll("circle").data(playerData);
 
+var playermaker = function(data){
+  player = svgContainer.selectAll("circle").data(playerData);
   player.enter().append("circle")
           .attr("class", "playerClass")
           .call(drag)
@@ -121,6 +154,8 @@ var playermaker = function(data){
 playermaker(playerData);
 
 moveEnemy(enemyData);
+
+
 
 setInterval(function(){
   randMove();
