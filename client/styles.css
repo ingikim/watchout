@@ -3,3 +3,7 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 
+.movedown{
+  /*transform: translate3d(5em, 5em, 0);*/
+  transition: transform .2s ease-in-out;
+}
