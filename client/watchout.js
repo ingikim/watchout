@@ -74,9 +74,25 @@ var moveEnemy = function(data){
 */ 
 function dragmove(d) {
     d3.select(this)
-      .attr("cx", d3.event.x)//((d3.event.sourceEvent.pageY) - this.offsetHeight/2)+"px")
-      .attr("cy", d3.event.y)//((d3.event.sourceEvent.pageX) - this.offsetWidth/2)+"px")
+      .attr("cx", function(){
+        if(d3.event.x < 0)
+          return 0;
+        else if(d3.event.x > width)
+          return width;
+        else
+          return d3.event.x;
+      })
+      .attr("cy", function(){
+        if(d3.event.y < 0)
+          return 0;
+        else if(d3.event.y > height)
+          return height;
+        else
+          return d3.event.y;
+      })
 }
+      // .attr("cx", d3.event.x)//((d3.event.sourceEvent.pageY) - this.offsetHeight/2)+"px")
+      // .attr("cy", d3.event.y)//((d3.event.sourceEvent.pageX) - this.offsetWidth/2)+"px")}
 
 var drag = d3.behavior.drag()
     .on("drag", dragmove);
@@ -94,8 +110,6 @@ var playermaker = function(data){
   player.enter().append("circle")
           .attr("class", "playerClass")
           .call(drag)
-          .on('drag', function(circle) { circle.attr('cx', d3.event.x)
-                                         .attr('cy', d3.event.y); })
           .attr("cx", function (d) {return d.cx; })
           .attr("cy", function (d) {return d.cy; })
           .attr("r", function (d) {return d.radius; })
